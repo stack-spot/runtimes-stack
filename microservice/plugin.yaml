@@ -1,0 +1,47 @@
+# Related Component: https://github.com/stack-spot/runtime-vela-components/blob/main/definitions/microservice.yaml
+name: microservice
+description: This plugin is responsible for adding a microservice component to an OAM file.
+display-name: microservice
+picture: plugin.png
+category: SRE
+compatibility:
+  - Microservice
+about: docs/about.md
+usage: docs/usage.md
+use-case: docs/use-case.md
+implementation: docs/implementation.md
+technologies:
+  - "Docker"
+types:
+  - app
+inputs:
+  - label: Account ID
+    type: text
+    name: account_id
+    default: '048266301146'
+  - label: Cluster OIDC
+    type: text
+    name: cluster_oidc
+    default: 'arn:aws:iam::048266301146:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/8CC4057BBFF3CA365979FA4EBD7F86EA'
+  - label: Container Image
+    type: text
+    name: container_image
+
+hooks:
+  - type: edit-yaml
+    trigger: after-render
+    path: "app.yaml"
+    indent: 2
+    encoding: utf-8
+    changes:
+      - yamlpath: "$.spec.components"
+        when:
+          not-exists: "$.spec.components[?name = 'runtimes-microservice']"
+        update:
+          value: |
+              name: runtimes-microservice
+              type: runtimes-microservice.microservice.x.y.z
+              properties:
+                image: {{ inputs.container_image }}
+                clusterOidc: {{ inputs.cluster_oidc }}
+                accountId: "{{ inputs.account_id }}"
