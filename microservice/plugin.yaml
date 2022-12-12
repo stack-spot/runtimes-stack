@@ -26,6 +26,7 @@ inputs:
   - label: Container Image
     type: text
     name: container_image
+    default: 'nginx'
 
 hooks:
   - type: edit-yaml
@@ -36,11 +37,11 @@ hooks:
     changes:
       - yamlpath: "$.spec.components"
         when:
-          not-exists: "$.spec.components[?name = 'runtimes-microservice']"
+          not-exists: "$.spec.components[?name = 'runtime-microservice']"
         update:
           value: |
-              name: runtimes-microservice
-              type: runtimes-microservice.microservice.x.y.z
+              name: runtime-microservice
+              type: runtime-microservice.microservice.x.y.z
               properties:
                 image: {{ inputs.container_image }}
                 clusterOidc: {{ inputs.cluster_oidc }}
